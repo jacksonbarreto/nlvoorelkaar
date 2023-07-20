@@ -6,10 +6,10 @@ import time
 import urllib
 
 import customtkinter as ctk
-from controllers import logincontroller as lc
-from controllers.logincontroller import logout, fast_login
-from globals.globals import SessionSingleton as ss, url_autocomplete
-from globals.globals import url_volunteer, headers, minimum_time, maximum_time, delay_to_start_sending
+from controllers import logincontrollerold as lc
+from controllers.logincontrollerold import logout, fast_login
+from config.settings import SessionSingleton as ss, url_autocomplete
+from config.settings import url_volunteer, headers, minimum_time, maximum_time, delay_to_start_sending
 from bs4 import BeautifulSoup
 
 

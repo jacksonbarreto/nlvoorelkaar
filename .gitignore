@@ -136,4 +136,4 @@ dmypy.json
 lab.py
 
 # credentials
-
+.login_data
