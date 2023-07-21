@@ -18,7 +18,6 @@ class LoginView(BaseView):
                  login_data_controller: LoginDataControllerInterface = None, specific_title: Optional[str] = None,
                  width: Optional[int] = None, height: Optional[int] = None):
         super().__init__(root_window, windows_manager)
-        self.root_window = root_window
         self.login_controller = login_controller
         self.next_window = next_window
         self.login_data_controller = LoginDataController() if login_data_controller is None else login_data_controller
@@ -96,7 +95,8 @@ class LoginView(BaseView):
 
     def destroy(self):
         for widget in self.widgets:
-            widget.destroy()
+            if widget.winfo_exists():
+                widget.destroy()
         self.main_frame.grid_forget()
 
     def configure_window_style(self) -> None:

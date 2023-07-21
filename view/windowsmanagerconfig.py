@@ -1,4 +1,6 @@
 from controllers.logincontroller import LoginController
+from services.servicemanager import ServiceManager
+from view.homeview import HomeView
 from view.loginview import LoginView
 
 
@@ -11,6 +13,10 @@ class WindowsManagerConfig:
             "LoginView": (LoginView, [],
                           {"root_window": self.root_window,
                            "login_controller": LoginController(),
-                           "next_window": "HomeWindow"
-                           })
+                           "next_window": "HomeView"
+                           }),
+            "HomeView": (HomeView, [],
+                         {"root_window": self.root_window,
+                          'service_manager': ServiceManager(),
+                          })
         }
