@@ -6,18 +6,21 @@ import customtkinter as ctk
 from controllers.LoginDataControllerInterface import LoginDataControllerInterface
 from controllers.logincontrollerinterface import LoginControllerInterface
 from controllers.logindatacontroller import LoginDataController
+from routing.windowsmanagerinterface import WindowManagerInterface
+from view.baseview import BaseView
 from view.utilsgui import center_window
 
 
-class LoginView(ctk.CTkFrame):
+class LoginView(BaseView):
 
-    def __init__(self, root_window: ctk.CTk, login_controller: LoginControllerInterface, main_screen: ctk.CTkFrame,
-                 login_data_controller: LoginDataControllerInterface = None, generic_title: Optional[str] = None,
-                 specific_title: Optional[str] = None, width: Optional[int] = None, height: Optional[int] = None):
-        super().__init__(root_window)
+    def __init__(self, root_window: ctk.CTk, login_controller: LoginControllerInterface, next_window: str,
+                 windows_manager: WindowManagerInterface, generic_title: Optional[str] = None,
+                 login_data_controller: LoginDataControllerInterface = None, specific_title: Optional[str] = None,
+                 width: Optional[int] = None, height: Optional[int] = None):
+        super().__init__(root_window, windows_manager)
         self.root_window = root_window
         self.login_controller = login_controller
-        self.main_screen = main_screen
+        self.next_window = next_window
         self.login_data_controller = LoginDataController() if login_data_controller is None else login_data_controller
         self.widgets = []
         self.username = None
@@ -131,7 +134,7 @@ class LoginView(ctk.CTkFrame):
             else:
                 self.login_data_controller.erase_login_data()
             self.error_label.grid_remove()
-            # self.main_screen.load_screen(self.root_window)
+            self.windows_manager.go_to_window(self.next_window)
         else:
             self.error_label.configure(text="Login failed, please try again.")
             self.error_label.grid()

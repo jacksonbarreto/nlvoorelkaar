@@ -1,8 +1,12 @@
+from routing.windowsmanagerinterface import WindowManagerInterface
 
-class WindowManager:
+
+class WindowManager(WindowManagerInterface):
     def __init__(self, config):
         self.current_window = None
-        self.config = config # { "LoginWindow": (LoginWindow, [arg1, arg2], {"key": "value"}), "AnotherWindow": (AnotherWindow, [arg3, arg4], {}),}
+        self.config = config  # { "LoginWindow": (LoginWindow, [arg1, arg2], {"key": "value"}), "AnotherWindow": (AnotherWindow, [arg3, arg4], {}),}
+        for view_args in self.config.values():
+            view_args[2]["windows_manager"] = self
 
     def go_to_window(self, window_name):
         if self.current_window is not None:
