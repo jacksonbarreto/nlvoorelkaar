@@ -6,7 +6,7 @@ import hashlib
 import base64
 from cryptography.fernet import Fernet
 
-from controllers.LoginDataControllerInterface import LoginDataControllerInterface
+from controllers.logindatacontrollerinterface import LoginDataControllerInterface
 
 
 class LoginDataController(LoginDataControllerInterface):

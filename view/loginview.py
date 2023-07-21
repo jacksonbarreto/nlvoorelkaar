@@ -3,7 +3,7 @@ from typing import Optional
 
 import customtkinter as ctk
 
-from controllers.LoginDataControllerInterface import LoginDataControllerInterface
+from controllers.logindatacontrollerinterface import LoginDataControllerInterface
 from controllers.logincontrollerinterface import LoginControllerInterface
 from controllers.logindatacontroller import LoginDataController
 from routing.windowsmanagerinterface import WindowManagerInterface
