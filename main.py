@@ -1,18 +1,22 @@
+import os
+
 from Utils.LoggingManager.loggingmanager import LogginManager
 from routing.windowsmanager import WindowManager
-from view import windows as win
+import customtkinter as ctk
 from view.windowsmanagerconfig import WindowsManagerConfig
+
+
+def on_close():
+    os._exit(0)
+
 
 if __name__ == '__main__':
     LogginManager().config()
 
-    root_window = win.start_window()
+    root_window = ctk.CTk()
 
     windows_manager = WindowManager(WindowsManagerConfig(root_window).get_config())
-    #windows_manager.go_to_window("LoginView")
-    windows_manager.go_to_window("HomeView")
+    windows_manager.go_to_window("LoginView")
 
-
-    #win.set_main_screen(root_window)
-
+    root_window.protocol("WM_DELETE_WINDOW", on_close)
     root_window.mainloop()

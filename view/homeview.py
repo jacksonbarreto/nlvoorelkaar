@@ -1,3 +1,4 @@
+import math
 from typing import Optional
 
 from routing.windowsmanagerinterface import WindowManagerInterface
@@ -215,18 +216,15 @@ class HomeView(BaseView):
         self.widgets.append(total_volunteers_frame)
 
         total_volunteers_label = ctk.CTkLabel(total_volunteers_frame, text="Total Volunteers")
-        total_volunteers_label.grid(row=0, column=0, sticky="w", pady=(15, 3))
+        total_volunteers_label.grid(row=0, column=0, sticky="nsew", pady=10, padx=10)
         self.widgets.append(total_volunteers_label)
 
-        self.total_volunteers = ctk.IntVar()
-        total_volunteers_label = ctk.CTkLabel(total_volunteers_frame, textvariable=self.total_volunteers)
-        total_volunteers_label.grid(row=1, column=2, sticky="w", pady=(0, 3))
+        self.total_volunteers = ctk.StringVar()
+        self.total_volunteers.set("0")
+        total_volunteers_label = ctk.CTkLabel(total_volunteers_frame, font=("Arial", 30),
+                                              textvariable=self.total_volunteers)
+        total_volunteers_label.place(relx=0.5, rely=0.5, anchor="center")
         self.widgets.append(total_volunteers_label)
-
-        get_volunteers_button = ctk.CTkButton(total_volunteers_frame, text="Get Volunteers",
-                                              command=lambda: capture_all_volunteers(tab_view, root_window))
-        get_volunteers_button.grid(row=2, column=2, sticky="w", pady=(0, 3))
-        self.widgets.append(get_volunteers_button)
 
     def create_message_frame(self):
         message_frame = ctk.CTkFrame(self.tab_view.tab(self.tab_names[0]))
@@ -240,7 +238,7 @@ class HomeView(BaseView):
 
         message_entry = ctk.CTkTextbox(message_frame, width=380, height=450)
         message_entry.grid(row=1, column=0, sticky="nsew", ipady=3, padx=10)
-        message_entry.bind("<KeyRelease>", lambda event: on_message_change(root_window))
+        message_entry.bind("<KeyRelease>", lambda event: self.on_message_change())
         self.message = message_entry
         self.widgets.append(message_entry)
 
@@ -253,13 +251,13 @@ class HomeView(BaseView):
         phone_entry.grid(row=3, column=0, sticky="nsew", ipady=3, padx=10)
         self.widgets.append(phone_entry)
 
-        send_button = ctk.CTkButton(message_frame, text="Send", command=lambda: send_message(tab_view, root_window))
+        send_button = ctk.CTkButton(message_frame, text="Send", command=lambda: self.pre_send_message())
         send_button.grid(row=4, column=0, sticky="nsew", pady=(15, 0), padx=10)
         send_button.configure(state="disabled")
         self.send_button = send_button
         self.widgets.append(self.send_button)
 
-    def show_loading_screen(self, tab_view_index: int):
+    def show_loading_screen(self, tab_view_index: int, randon: bool = True):
         loading_frame = ctk.CTkFrame(self.tab_view.tab(self.tab_names[tab_view_index]))
         loading_frame.grid(row=0, column=0, columnspan=3, rowspan=2, sticky="nsew")
         loading_frame.grid_rowconfigure(0, weight=1)
@@ -286,6 +284,10 @@ class HomeView(BaseView):
         percent_label.grid(row=2, column=0, sticky="nsew", pady=(5, 0))
         self.percent_var = percent_var
 
+        if randon:
+            self.progress_bar.start()
+            self.percent_var.set("Loading...")
+
     def clean_loading_frame(self):
         self.loading_frame.grid_forget()
         self.progress_bar = None
@@ -299,7 +301,8 @@ class HomeView(BaseView):
         self.service_manager.unsubscribe(self)
 
     def on_filter_change(self):
-        self.service_manager.get_total_volunteers(self.checkbox_vars, self.location_ids_types, self.distance.get())
+        self.service_manager.get_amount_of_volunteer(self.checkbox_vars, self.location_ids_types, self.location.get(),
+                                                     self.distance.get())
         self.show_loading_screen(0)
 
     def on_location_change(self):
@@ -321,9 +324,20 @@ class HomeView(BaseView):
     def notify(self, service_id, data):
         if service_id == 'notify_location_auto_complete':
             self.update_option_menu(data)
+        elif service_id == 'notify_amount_of_volunteer':
+            self.update_amount_of_volunteer(data)
+        elif service_id == 'notify_starting_messaging':
+            self.update_message_starting(data)
+        elif service_id == 'notify_get_volunteers':
+            self.send_message(data)
+        elif service_id == 'notify_progresse_get_volunteers':
+            self.update_progress_bar_to_get_volunteers(data)
+        elif service_id == 'notify_message_sent':
+            self.update_message_sent()
+        elif service_id == 'notify_progress_message_sending':
+            self.update_progress_bar_to_message_sending(data)
 
     def update_option_menu(self, data):
-        print(data)
         if len(data) == 0:
             self.option_menu.configure(values=[])
             self.option_menu.set("No results found")
@@ -343,3 +357,49 @@ class HomeView(BaseView):
                 item[
                     'name']: (item['id'], item['type'], item['subtitle']) for item in data
             }
+
+    def update_amount_of_volunteer(self, data):
+        self.total_volunteers.set(data)
+        self.clean_loading_frame()
+
+    def update_message_starting(self, data):
+        self.percent_var.set(f"Messaging will start in {int(data)} seconds.")
+        pass
+
+    def pre_send_message(self):
+        self.show_loading_screen(0, False)
+        self.service_manager.get_volunteers(self.checkbox_vars, self.location_ids_types, self.location.get(),
+                                            self.distance.get())
+
+    def send_message(self, data):
+        self.clean_loading_frame()
+        self.show_loading_screen(0, False)
+        self.service_manager.send_messages(self.root_window.username, self.root_window.password,
+                                           self.message.get("1.0", "end-1c"), self.phone.get(), data)
+
+    def update_progress_bar_to_get_volunteers(self, current_page: int):
+        total_volunteers = int(self.total_volunteers.get().replace('.', ''))
+        num_pages = 1 if total_volunteers == 0 else math.ceil(total_volunteers / 23)
+        progress = current_page / num_pages
+        self.percent_var.set(f"Getting volunteers... {progress * 100:.1f}%")
+        self.progress_bar.set(progress)
+
+    def update_message_sent(self):
+        self.clean_loading_frame()
+        self.clear_message_fields()
+
+    def update_progress_bar_to_message_sending(self, data):
+        total_volunteers = int(self.total_volunteers.get().replace('.', ''))
+        self.percent_var.set(f"Messages Sent: {data} out of {self.total_volunteers.get()}.")
+        self.progress_bar.set(data / total_volunteers)
+
+    def clear_message_fields(self):
+        self.message.delete("1.0", "end-1c")
+        self.phone.set("")
+
+    def on_message_change(self):
+        total_characters = len(self.message.get("1.0", "end-1c"))
+        if total_characters > 3:
+            self.send_button.configure(state="normal")
+        else:
+            self.send_button.configure(state="disabled")

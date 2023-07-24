@@ -10,7 +10,7 @@ __pycache__/
 .Python
 build/
 develop-eggs/
-dist/
+
 downloads/
 eggs/
 .eggs/
@@ -137,3 +137,4 @@ lab.py
 
 # credentials
 .login_data
+logs/

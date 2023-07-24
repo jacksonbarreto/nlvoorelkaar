@@ -1,8 +1,4 @@
-
-
-
 def center_window(root_window):
-    #root_window.update_idletasks()
     width = root_window.winfo_width()
     height = root_window.winfo_height()
     x = (root_window.winfo_screenwidth() // 2) - (width // 2)

@@ -133,6 +133,8 @@ class LoginView(BaseView):
                 self.login_data_controller.save_login_data(self.username.get(), self.password.get())
             else:
                 self.login_data_controller.erase_login_data()
+            self.root_window.username = self.username.get()
+            self.root_window.password = self.password.get()
             self.error_label.grid_remove()
             self.windows_manager.go_to_window(self.next_window)
         else:

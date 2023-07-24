@@ -1,9 +1,9 @@
-import requests
-
 headers = {
-    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,'
+              'application/signed-exchange;v=b3;q=0.7',
     'Accept-Language': 'en-GB,en;q=0.9',
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) '
+                  'Chrome/91.0.4472.124 Safari/537.36'
 }
 
 url_base = 'https://www.nlvoorelkaar.nl/'
@@ -13,15 +13,6 @@ url_logout = f'{url_base}uitloggen'
 url_login_page = 'https://www.nlvoorelkaar.nl/inloggen'
 url_login = 'https://www.nlvoorelkaar.nl/login_check'
 
-all_volunteer = None
 delay_to_start_sending = 30.7584
 minimum_time = 30
 maximum_time = 60
-class SessionSingleton:
-    _session = None
-
-    @staticmethod
-    def get_session():
-        if SessionSingleton._session is None:
-            SessionSingleton._session = requests.Session()
-        return SessionSingleton._session
