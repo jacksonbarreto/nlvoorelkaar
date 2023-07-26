@@ -13,8 +13,8 @@ class UrlService:
 
         params = []
         if location:
-            location = urllib.parse.quote(location)
-            params.append(f"region%5Blocation%5D={location}")
+            location_encoded = urllib.parse.quote(location)
+            params.append(f"region%5Blocation%5D={location_encoded}")
             location_id = location_ids_types[location][0] if location_ids_types[location][0] is not None else ''
             params.append(f"region%5Blocation_id%5D={location_id}")
             location_type = location_ids_types[location][1] if location_ids_types[location][1] is not None else ''
@@ -24,5 +24,4 @@ class UrlService:
 
         if categories:
             params.extend(categories)
-
         return f"{url_volunteer}?{'&'.join(params)}" if params else url_volunteer

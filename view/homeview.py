@@ -6,6 +6,8 @@ from services.servicemanagerinterface import ServiceManagerInterface
 from view.baseview import BaseView
 import customtkinter as ctk
 
+from view.utilsgui import center_window
+
 
 class HomeView(BaseView):
     def __init__(self, root_window: ctk.CTk, windows_manager: WindowManagerInterface,
@@ -58,6 +60,9 @@ class HomeView(BaseView):
         self.create_location_filter()
         self.create_box_get_volunteers()
         self.create_message_frame()
+        x = (self.root_window.winfo_screenwidth() // 2) - (self.width // 2)
+        y = (self.root_window.winfo_screenheight() // 2) - (self.height // 2)
+        self.root_window.geometry('{}x{}+{}+{}'.format(self.width, self.height, x, y))
 
     def create_categories_filter(self):
         category_frame = ctk.CTkFrame(self.tab_view.tab(self.tab_names[0]))
@@ -153,7 +158,7 @@ class HomeView(BaseView):
         self.location = ctk.StringVar()
         location_label = ctk.CTkLabel(location_frame, text="find the city or postal code")
         location_label.grid(row=1, column=0, sticky="w", pady=(0, 3), padx=5)
-        # self.widgets.append(location_label)
+        self.widgets.append(location_label)
 
         location_entry = ctk.CTkEntry(location_frame, textvariable=self.location)
         location_entry.bind("<Return>", lambda event: self.on_location_change())
